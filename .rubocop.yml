@@ -1,0 +1,21 @@
+inherit_from: .rubocop_todo.yml
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+Documentation:
+  Enabled: false
+Metrics/LineLength:
+  Max: 120
+Metrics/MethodLength:
+  CountComments: false
+  Max: 20
+Metrics/ClassLength:
+  CountComments: false
+Style/SymbolArray:
+  EnforcedStyle: percent
+Style/PercentLiteralDelimiters:
+  PreferredDelimiters:
+    default: ()
+    '%i': ()
+    '%w': ()
+
