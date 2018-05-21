@@ -3,6 +3,7 @@ GEM
   specs:
     ast (2.4.0)
     byebug (10.0.2)
+    minitest (5.11.3)
     parallel (1.12.1)
     parser (2.5.1.0)
       ast (~> 2.4.0)
@@ -23,6 +24,7 @@ PLATFORMS
 
 DEPENDENCIES
   byebug
+  minitest
   rubocop
 
 BUNDLED WITH
