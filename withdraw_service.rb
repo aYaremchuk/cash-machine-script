@@ -72,5 +72,6 @@ class WithdrawService
     @data['banknotes'] = @available_money
     @data['accounts'][@account_id] = @account_data
     DataWriter.new(@data, @file).write
+    @account_data['balance']
   end
 end
