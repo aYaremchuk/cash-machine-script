@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'io/console'
 require 'byebug'
 
 require_relative 'withdraw_service'
@@ -9,18 +10,40 @@ class Interface
                                 '2': 'withdraw',
                                 '3': 'logout' }.freeze
 
-  def initialize(data, file)
+  def initialize(data, file, account_id = nil)
     @data = data
-    @account_data = nil
-    @account_id = nil
+    @account_id = account_id
+    @account_data = nil || @data['accounts'][account_id]
     @file = file
   end
 
   def dialog
+    system_check
     check_account
   end
 
+  def authorized_dialog
+    puts
+    puts 'Please Choose From the Following Options:'
+    puts '1. Display Balance'
+    puts '2. Withdraw'
+    puts '3. Log Out'
+    puts
+    operation_choice
+  end
+
   private
+
+  def system_check
+    if check_money_storage
+      true
+    else
+      puts
+      puts "This ATM doesn't work now. We don't have money"
+      STDIN.getch
+      exit
+    end
+  end
 
   def check_account
     puts
@@ -48,25 +71,15 @@ class Interface
     end
   end
 
-  def authorized_dialog
-    puts
-    puts 'Please Choose From the Following Options:'
-    puts '1. Display Balance'
-    puts '2. Withdraw'
-    puts '3. Log Out'
-    puts
-    operation_choice
-  end
-
   def operation_choice
     choice = $stdin.gets.chomp
 
     prepared_choice_value = choice.to_s.to_sym
     if AVAILABLE_CHOICE_VARIANTS.keys.include?(prepared_choice_value)
       send(AVAILABLE_CHOICE_VARIANTS[prepared_choice_value])
-      # puts AVAILABLE_CHOICE_VARIANTS[prepared_choice_value]
     else
       puts 'no such variant'
+      authorized_dialog
     end
   end
 
@@ -75,7 +88,7 @@ class Interface
     @account_data = nil
     sleep 2
     print "\e[2J\e[f"
-    check_account
+    dialog
   end
 
   def display_balance
@@ -84,7 +97,16 @@ class Interface
   end
 
   def withdraw
-    WithdrawService.new(@data['banknotes'], @account_data, @data, @account_id, @file).perform
+    if check_money_storage
+      WithdrawService.new(@data, @account_id, @file).perform
+    else
+      puts 'No available money'
+    end
+
     authorized_dialog
+  end
+
+  def check_money_storage
+    WithdrawService.available_money_sum(@data['banknotes']).positive?
   end
 end
