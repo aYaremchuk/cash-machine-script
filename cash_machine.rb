@@ -1,7 +1,7 @@
 require_relative 'data_reader'
 require_relative 'interface'
 
-class Atm
+class CashMachine
   trap('SIGINT') { exit! }
   begin
     @filename = ARGV[0]
